@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Race</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Car Race</h1>
+<table id="carInfo">
+  <tr>
+    <th>Brand</th>
+    <th>Model</th>
+    <th>Year</th>
+    <th>Color</th>
+    <th>Price</th>
+    <th>Gas (Liters)</th>
+  </tr>
+</table>
+
+<script>
+  class Car {
+    constructor(brand, model, year, color, price, gas) {
+      this.brand = brand;
+      this.model = model;
+      this.year = year;
+      this.color = color;
+      this.price = price;
+      this.gas = gas;
+    }
+
+    honk() {
+      console.log("Tuut tuut");
+      console.log(`Brand: ${this.brand}, Model: ${this.model}, Year: ${this.year}, Color: ${this.color}, Price: ${this.price}`);
+    }
+
+    loseGas(currentYear) {
+      let loss = 5;
+      if (this.year !== currentYear) {
+        loss += (currentYear - this.year);
+      }
+      this.gas -= loss;
+      if (this.gas < 0) this.gas = 0;
+    }
+  }
+
+  const currentYear = new Date().getFullYear();
+
+  const cars = [
+    new Car("Honda", "CR-V", 2023, "Red", 50000, 45),
+    new Car("Ford", "F-150", 2020, "Black", 25000, 30),
+    new Car("BMW", "X5", 2022, "Green", 60000, 65),
+    new Car("Mazda", "CX-5", 2019, "White", 15000, 60),
+    new Car("Audi", "Q7", 2018, "Silver", 52000, 47),
+    new Car("Kia", "Forte", 2020, "Blue", 21000, 56)
+  ];
+
+  const carInfoTable = document.getElementById("carInfo");
+
+  function displayCarInfo() {
+    carInfoTable.innerHTML = "<tr><th>Brand</th><th>Model</th><th>Year</th><th>Color</th><th>Price</th><th>Gas (Liters)</th></tr>";
+    cars.forEach((car, index) => {
+      car.loseGas(currentYear);
+      const carRow = document.createElement("tr");
+      carRow.innerHTML = `
+        <td id="brand${index}">${car.brand}</td>
+        <td>${car.model}</td>
+        <td>${car.year}</td>
+        <td>${car.color}</td>
+        <td>${car.price}</td>
+        <td id="gas${index}">${car.gas}</td>
+      `;
+      carInfoTable.appendChild(carRow);
+
+      const brandCell = document.getElementById(`brand${index}`);
+      brandCell.addEventListener("click", function() {
+        const selectedBrandCells = document.querySelectorAll(".selected");
+        selectedBrandCells.forEach(cell => cell.classList.remove("selected"));
+        brandCell.classList.add("selected");
+      });
+    });
+  }
+
+  function race() {
+    for (let i = 0; i < 7; i++) {
+      displayCarInfo();
+    }
+  }
+
+  race();
+
+  carInfoTable.addEventListener("click", function(e) {
+    if (e.target.tagName === "TD") {
+      const index = e.target.id.substring(3);
+      cars[index].gas -= 1;
+      if (cars[index].gas < 0) cars[index].gas = 0;
+      displayCarInfo();
+    }
+  });
+</script>
+
+</body>
+</html>
